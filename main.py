@@ -16,15 +16,12 @@ longpool = bot_longpoll.VkBotLongPoll(vk=vk_session, group_id=group)
 
 def tts(peer_id, mid, text):
     id = peer_id + mid
-    tts = gTTS(text=text, lang="ru")
-    tts.save(str(id) + ".mp3")
-    upload = VkUpload(vk_session)
-    audio = upload.audio_message(audio=str(id) + ".mp3", peer_id=peer_id)
+    gTTS(text=text, lang="ru").save(str(id) + ".mp3")
+    audio = VkUpload(vk_session).audio_message(audio=str(id) + ".mp3", peer_id=peer_id)
     owner = audio['audio_message']['owner_id']
     audio_id = audio['audio_message']['id']
-    link = "vk.com/doc" + str(owner) + "_" + str(audio_id)
     vk.messages.send(
-        message=link,
+        message="vk.com/doc" + str(owner) + "_" + str(audio_id),
         random_id=utils.get_random_id(),
         peer_id=peer_id,
         reply_to=mid,
@@ -38,10 +35,6 @@ for event in longpool.listen():
     peer_id = event.message.peer_id
     text = event.message.text.lower()
     mid = event.message.id
-    if (peer_id - 2000000000) > 0 and (text.find("/tts") == -1):
-        continue
-    if text.find("/tts") == 0:
-        text = text.replace('/tts ', '')
     vk.messages.send(
         message="Ваше сообщение поставленно в очередь на озвучивание, ожидайте",
         random_id=utils.get_random_id(),
