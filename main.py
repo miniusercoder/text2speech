@@ -8,7 +8,7 @@ from vk_api import utils
 import os
 
 token = ""
-group = 0
+group = 1
 vk_session = VkApi(token=token)
 vk = vk_session.get_api()
 longpool = bot_longpoll.VkBotLongPoll(vk=vk_session, group_id=group)
@@ -36,10 +36,12 @@ def tts(peer_id, mid, text):
 
 for event in longpool.listen():
     peer_id = event.message.peer_id
-    if (peer_id - 2000000000) > 0:
-        continue
-    text = event.message.text
+    text = event.message.text.lower()
     mid = event.message.id
+    if (peer_id - 2000000000) > 0 and (text.find("/tts") == -1):
+        continue
+    if text.find("/tts") == 0:
+        text = text.replace('/tts ', '')
     vk.messages.send(
         message="Ваше сообщение поставленно в очередь на озвучивание, ожидайте",
         random_id=utils.get_random_id(),
